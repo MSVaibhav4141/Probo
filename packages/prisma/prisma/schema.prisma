@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  name          String?
+  email         String?  @unique
+  emailVerified DateTime?
+  image         String?
+  balanace Decimal @default(0) @db.Decimal(10,2)
+  order Orders[]
+  accounts Account[]
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? 
+  access_token       String? 
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId]) // ✅ This line is essential
+}
+
+
+
+model Orders{
+  id String @id
+  userId String
+  eventId String
+  type String
+  side String
+  quantity Int
+  leftQty Int
+  price Decimal @db.Decimal(2,1)
+  status String @default("pending")
+  createdAt DateTime
+  buyId  Trades[] @relation("BuyOrder")
+  sellId Trades[] @relation("SellOrder")
+  user User @relation(fields: [userId] , references: [id])
+  event Events @relation(fields: [eventId], references: [id])
+}
+
+model Events{
+  id String @id @default(uuid())
+  title String
+  startTime DateTime
+  EndTime DateTime
+  status String
+  orders Orders[]
+}
+
+model Trades{
+  id String @id @default(uuid())
+  buyOrderId String
+  sellOrderId String
+  price  Decimal @db.Decimal(2,1)
+  quantity Int
+  timeStamp DateTime
+  buyId Orders @relation(name: "BuyOrder", fields: [buyOrderId] , references: [id]) 
+  sellId Orders @relation(name:"SellOrder",fields: [sellOrderId] , references: [id]) 
+}

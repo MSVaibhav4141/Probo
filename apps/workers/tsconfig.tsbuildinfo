@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/manager/dbsync.ts","./src/manager/ordermanager.ts","./src/manager/tradeworker.ts"],"version":"5.8.2"}

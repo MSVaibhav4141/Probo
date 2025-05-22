@@ -1,0 +1,24 @@
+{
+  "name": "workers",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -b",
+    "start": "node ./dist/index.js",
+    "dev": "npm run build && npm run start"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*"
+  },
+  "dependencies": {
+    "@repo/bullMq": "workspace:*",
+    "@repo/prisma": "workspace:*",
+    "@repo/redis-client": "workspace:*",
+    "bullmq": "^5.52.2",
+    "uuid": "^11.1.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
