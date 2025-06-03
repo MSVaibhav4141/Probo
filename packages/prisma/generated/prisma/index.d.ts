@@ -271,8 +271,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.7.0
-   * Query Engine version: 3cff47a7f5d65c3ea74883f1d736e41d68ce91ed
+   * Prisma Client JS version: 6.9.0
+   * Query Engine version: 81e4af48011447c3cc503a190e86995b66d2a28e
    */
   export type PrismaVersion = {
     client: string
@@ -3687,12 +3687,16 @@ export namespace Prisma {
     quantity: number | null
     leftQty: number | null
     price: Decimal | null
+    exit: number | null
+    cancel: number | null
   }
 
   export type OrdersSumAggregateOutputType = {
     quantity: number | null
     leftQty: number | null
     price: Decimal | null
+    exit: number | null
+    cancel: number | null
   }
 
   export type OrdersMinAggregateOutputType = {
@@ -3706,6 +3710,9 @@ export namespace Prisma {
     price: Decimal | null
     status: string | null
     createdAt: Date | null
+    exitFromOrderId: string | null
+    exit: number | null
+    cancel: number | null
   }
 
   export type OrdersMaxAggregateOutputType = {
@@ -3719,6 +3726,9 @@ export namespace Prisma {
     price: Decimal | null
     status: string | null
     createdAt: Date | null
+    exitFromOrderId: string | null
+    exit: number | null
+    cancel: number | null
   }
 
   export type OrdersCountAggregateOutputType = {
@@ -3732,6 +3742,9 @@ export namespace Prisma {
     price: number
     status: number
     createdAt: number
+    exitFromOrderId: number
+    exit: number
+    cancel: number
     _all: number
   }
 
@@ -3740,12 +3753,16 @@ export namespace Prisma {
     quantity?: true
     leftQty?: true
     price?: true
+    exit?: true
+    cancel?: true
   }
 
   export type OrdersSumAggregateInputType = {
     quantity?: true
     leftQty?: true
     price?: true
+    exit?: true
+    cancel?: true
   }
 
   export type OrdersMinAggregateInputType = {
@@ -3759,6 +3776,9 @@ export namespace Prisma {
     price?: true
     status?: true
     createdAt?: true
+    exitFromOrderId?: true
+    exit?: true
+    cancel?: true
   }
 
   export type OrdersMaxAggregateInputType = {
@@ -3772,6 +3792,9 @@ export namespace Prisma {
     price?: true
     status?: true
     createdAt?: true
+    exitFromOrderId?: true
+    exit?: true
+    cancel?: true
   }
 
   export type OrdersCountAggregateInputType = {
@@ -3785,6 +3808,9 @@ export namespace Prisma {
     price?: true
     status?: true
     createdAt?: true
+    exitFromOrderId?: true
+    exit?: true
+    cancel?: true
     _all?: true
   }
 
@@ -3885,6 +3911,9 @@ export namespace Prisma {
     price: Decimal
     status: string
     createdAt: Date
+    exitFromOrderId: string | null
+    exit: number
+    cancel: number
     _count: OrdersCountAggregateOutputType | null
     _avg: OrdersAvgAggregateOutputType | null
     _sum: OrdersSumAggregateOutputType | null
@@ -3917,6 +3946,9 @@ export namespace Prisma {
     price?: boolean
     status?: boolean
     createdAt?: boolean
+    exitFromOrderId?: boolean
+    exit?: boolean
+    cancel?: boolean
     buyId?: boolean | Orders$buyIdArgs<ExtArgs>
     sellId?: boolean | Orders$sellIdArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3935,6 +3967,9 @@ export namespace Prisma {
     price?: boolean
     status?: boolean
     createdAt?: boolean
+    exitFromOrderId?: boolean
+    exit?: boolean
+    cancel?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     event?: boolean | EventsDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["orders"]>
@@ -3950,6 +3985,9 @@ export namespace Prisma {
     price?: boolean
     status?: boolean
     createdAt?: boolean
+    exitFromOrderId?: boolean
+    exit?: boolean
+    cancel?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     event?: boolean | EventsDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["orders"]>
@@ -3965,9 +4003,12 @@ export namespace Prisma {
     price?: boolean
     status?: boolean
     createdAt?: boolean
+    exitFromOrderId?: boolean
+    exit?: boolean
+    cancel?: boolean
   }
 
-  export type OrdersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "eventId" | "type" | "side" | "quantity" | "leftQty" | "price" | "status" | "createdAt", ExtArgs["result"]["orders"]>
+  export type OrdersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "eventId" | "type" | "side" | "quantity" | "leftQty" | "price" | "status" | "createdAt" | "exitFromOrderId" | "exit" | "cancel", ExtArgs["result"]["orders"]>
   export type OrdersInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     buyId?: boolean | Orders$buyIdArgs<ExtArgs>
     sellId?: boolean | Orders$sellIdArgs<ExtArgs>
@@ -4003,6 +4044,9 @@ export namespace Prisma {
       price: Prisma.Decimal
       status: string
       createdAt: Date
+      exitFromOrderId: string | null
+      exit: number
+      cancel: number
     }, ExtArgs["result"]["orders"]>
     composites: {}
   }
@@ -4440,6 +4484,9 @@ export namespace Prisma {
     readonly price: FieldRef<"Orders", 'Decimal'>
     readonly status: FieldRef<"Orders", 'String'>
     readonly createdAt: FieldRef<"Orders", 'DateTime'>
+    readonly exitFromOrderId: FieldRef<"Orders", 'String'>
+    readonly exit: FieldRef<"Orders", 'Int'>
+    readonly cancel: FieldRef<"Orders", 'Int'>
   }
     
 
@@ -7143,7 +7190,10 @@ export namespace Prisma {
     leftQty: 'leftQty',
     price: 'price',
     status: 'status',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    exitFromOrderId: 'exitFromOrderId',
+    exit: 'exit',
+    cancel: 'cancel'
   };
 
   export type OrdersScalarFieldEnum = (typeof OrdersScalarFieldEnum)[keyof typeof OrdersScalarFieldEnum]
@@ -7446,6 +7496,9 @@ export namespace Prisma {
     price?: DecimalFilter<"Orders"> | Decimal | DecimalJsLike | number | string
     status?: StringFilter<"Orders"> | string
     createdAt?: DateTimeFilter<"Orders"> | Date | string
+    exitFromOrderId?: StringNullableFilter<"Orders"> | string | null
+    exit?: IntFilter<"Orders"> | number
+    cancel?: IntFilter<"Orders"> | number
     buyId?: TradesListRelationFilter
     sellId?: TradesListRelationFilter
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -7463,6 +7516,9 @@ export namespace Prisma {
     price?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
+    exitFromOrderId?: SortOrderInput | SortOrder
+    exit?: SortOrder
+    cancel?: SortOrder
     buyId?: TradesOrderByRelationAggregateInput
     sellId?: TradesOrderByRelationAggregateInput
     user?: UserOrderByWithRelationInput
@@ -7483,6 +7539,9 @@ export namespace Prisma {
     price?: DecimalFilter<"Orders"> | Decimal | DecimalJsLike | number | string
     status?: StringFilter<"Orders"> | string
     createdAt?: DateTimeFilter<"Orders"> | Date | string
+    exitFromOrderId?: StringNullableFilter<"Orders"> | string | null
+    exit?: IntFilter<"Orders"> | number
+    cancel?: IntFilter<"Orders"> | number
     buyId?: TradesListRelationFilter
     sellId?: TradesListRelationFilter
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -7500,6 +7559,9 @@ export namespace Prisma {
     price?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
+    exitFromOrderId?: SortOrderInput | SortOrder
+    exit?: SortOrder
+    cancel?: SortOrder
     _count?: OrdersCountOrderByAggregateInput
     _avg?: OrdersAvgOrderByAggregateInput
     _max?: OrdersMaxOrderByAggregateInput
@@ -7521,6 +7583,9 @@ export namespace Prisma {
     price?: DecimalWithAggregatesFilter<"Orders"> | Decimal | DecimalJsLike | number | string
     status?: StringWithAggregatesFilter<"Orders"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Orders"> | Date | string
+    exitFromOrderId?: StringNullableWithAggregatesFilter<"Orders"> | string | null
+    exit?: IntWithAggregatesFilter<"Orders"> | number
+    cancel?: IntWithAggregatesFilter<"Orders"> | number
   }
 
   export type EventsWhereInput = {
@@ -7827,6 +7892,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     status?: string
     createdAt: Date | string
+    exitFromOrderId?: string | null
+    exit?: number
+    cancel?: number
     buyId?: TradesCreateNestedManyWithoutBuyIdInput
     sellId?: TradesCreateNestedManyWithoutSellIdInput
     user: UserCreateNestedOneWithoutOrderInput
@@ -7844,6 +7912,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     status?: string
     createdAt: Date | string
+    exitFromOrderId?: string | null
+    exit?: number
+    cancel?: number
     buyId?: TradesUncheckedCreateNestedManyWithoutBuyIdInput
     sellId?: TradesUncheckedCreateNestedManyWithoutSellIdInput
   }
@@ -7857,6 +7928,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exitFromOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    exit?: IntFieldUpdateOperationsInput | number
+    cancel?: IntFieldUpdateOperationsInput | number
     buyId?: TradesUpdateManyWithoutBuyIdNestedInput
     sellId?: TradesUpdateManyWithoutSellIdNestedInput
     user?: UserUpdateOneRequiredWithoutOrderNestedInput
@@ -7874,6 +7948,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exitFromOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    exit?: IntFieldUpdateOperationsInput | number
+    cancel?: IntFieldUpdateOperationsInput | number
     buyId?: TradesUncheckedUpdateManyWithoutBuyIdNestedInput
     sellId?: TradesUncheckedUpdateManyWithoutSellIdNestedInput
   }
@@ -7889,6 +7966,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     status?: string
     createdAt: Date | string
+    exitFromOrderId?: string | null
+    exit?: number
+    cancel?: number
   }
 
   export type OrdersUpdateManyMutationInput = {
@@ -7900,6 +7980,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exitFromOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    exit?: IntFieldUpdateOperationsInput | number
+    cancel?: IntFieldUpdateOperationsInput | number
   }
 
   export type OrdersUncheckedUpdateManyInput = {
@@ -7913,6 +7996,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exitFromOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    exit?: IntFieldUpdateOperationsInput | number
+    cancel?: IntFieldUpdateOperationsInput | number
   }
 
   export type EventsCreateInput = {
@@ -8352,12 +8438,17 @@ export namespace Prisma {
     price?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
+    exitFromOrderId?: SortOrder
+    exit?: SortOrder
+    cancel?: SortOrder
   }
 
   export type OrdersAvgOrderByAggregateInput = {
     quantity?: SortOrder
     leftQty?: SortOrder
     price?: SortOrder
+    exit?: SortOrder
+    cancel?: SortOrder
   }
 
   export type OrdersMaxOrderByAggregateInput = {
@@ -8371,6 +8462,9 @@ export namespace Prisma {
     price?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
+    exitFromOrderId?: SortOrder
+    exit?: SortOrder
+    cancel?: SortOrder
   }
 
   export type OrdersMinOrderByAggregateInput = {
@@ -8384,12 +8478,17 @@ export namespace Prisma {
     price?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
+    exitFromOrderId?: SortOrder
+    exit?: SortOrder
+    cancel?: SortOrder
   }
 
   export type OrdersSumOrderByAggregateInput = {
     quantity?: SortOrder
     leftQty?: SortOrder
     price?: SortOrder
+    exit?: SortOrder
+    cancel?: SortOrder
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -9032,6 +9131,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     status?: string
     createdAt: Date | string
+    exitFromOrderId?: string | null
+    exit?: number
+    cancel?: number
     buyId?: TradesCreateNestedManyWithoutBuyIdInput
     sellId?: TradesCreateNestedManyWithoutSellIdInput
     event: EventsCreateNestedOneWithoutOrdersInput
@@ -9047,6 +9149,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     status?: string
     createdAt: Date | string
+    exitFromOrderId?: string | null
+    exit?: number
+    cancel?: number
     buyId?: TradesUncheckedCreateNestedManyWithoutBuyIdInput
     sellId?: TradesUncheckedCreateNestedManyWithoutSellIdInput
   }
@@ -9129,6 +9234,9 @@ export namespace Prisma {
     price?: DecimalFilter<"Orders"> | Decimal | DecimalJsLike | number | string
     status?: StringFilter<"Orders"> | string
     createdAt?: DateTimeFilter<"Orders"> | Date | string
+    exitFromOrderId?: StringNullableFilter<"Orders"> | string | null
+    exit?: IntFilter<"Orders"> | number
+    cancel?: IntFilter<"Orders"> | number
   }
 
   export type AccountUpsertWithWhereUniqueWithoutUserInput = {
@@ -9430,6 +9538,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     status?: string
     createdAt: Date | string
+    exitFromOrderId?: string | null
+    exit?: number
+    cancel?: number
     buyId?: TradesCreateNestedManyWithoutBuyIdInput
     sellId?: TradesCreateNestedManyWithoutSellIdInput
     user: UserCreateNestedOneWithoutOrderInput
@@ -9445,6 +9556,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     status?: string
     createdAt: Date | string
+    exitFromOrderId?: string | null
+    exit?: number
+    cancel?: number
     buyId?: TradesUncheckedCreateNestedManyWithoutBuyIdInput
     sellId?: TradesUncheckedCreateNestedManyWithoutSellIdInput
   }
@@ -9484,6 +9598,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     status?: string
     createdAt: Date | string
+    exitFromOrderId?: string | null
+    exit?: number
+    cancel?: number
     sellId?: TradesCreateNestedManyWithoutSellIdInput
     user: UserCreateNestedOneWithoutOrderInput
     event: EventsCreateNestedOneWithoutOrdersInput
@@ -9500,6 +9617,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     status?: string
     createdAt: Date | string
+    exitFromOrderId?: string | null
+    exit?: number
+    cancel?: number
     sellId?: TradesUncheckedCreateNestedManyWithoutSellIdInput
   }
 
@@ -9517,6 +9637,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     status?: string
     createdAt: Date | string
+    exitFromOrderId?: string | null
+    exit?: number
+    cancel?: number
     buyId?: TradesCreateNestedManyWithoutBuyIdInput
     user: UserCreateNestedOneWithoutOrderInput
     event: EventsCreateNestedOneWithoutOrdersInput
@@ -9533,6 +9656,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     status?: string
     createdAt: Date | string
+    exitFromOrderId?: string | null
+    exit?: number
+    cancel?: number
     buyId?: TradesUncheckedCreateNestedManyWithoutBuyIdInput
   }
 
@@ -9561,6 +9687,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exitFromOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    exit?: IntFieldUpdateOperationsInput | number
+    cancel?: IntFieldUpdateOperationsInput | number
     sellId?: TradesUpdateManyWithoutSellIdNestedInput
     user?: UserUpdateOneRequiredWithoutOrderNestedInput
     event?: EventsUpdateOneRequiredWithoutOrdersNestedInput
@@ -9577,6 +9706,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exitFromOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    exit?: IntFieldUpdateOperationsInput | number
+    cancel?: IntFieldUpdateOperationsInput | number
     sellId?: TradesUncheckedUpdateManyWithoutSellIdNestedInput
   }
 
@@ -9600,6 +9732,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exitFromOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    exit?: IntFieldUpdateOperationsInput | number
+    cancel?: IntFieldUpdateOperationsInput | number
     buyId?: TradesUpdateManyWithoutBuyIdNestedInput
     user?: UserUpdateOneRequiredWithoutOrderNestedInput
     event?: EventsUpdateOneRequiredWithoutOrdersNestedInput
@@ -9616,6 +9751,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exitFromOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    exit?: IntFieldUpdateOperationsInput | number
+    cancel?: IntFieldUpdateOperationsInput | number
     buyId?: TradesUncheckedUpdateManyWithoutBuyIdNestedInput
   }
 
@@ -9629,6 +9767,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     status?: string
     createdAt: Date | string
+    exitFromOrderId?: string | null
+    exit?: number
+    cancel?: number
   }
 
   export type AccountCreateManyUserInput = {
@@ -9654,6 +9795,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exitFromOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    exit?: IntFieldUpdateOperationsInput | number
+    cancel?: IntFieldUpdateOperationsInput | number
     buyId?: TradesUpdateManyWithoutBuyIdNestedInput
     sellId?: TradesUpdateManyWithoutSellIdNestedInput
     event?: EventsUpdateOneRequiredWithoutOrdersNestedInput
@@ -9669,6 +9813,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exitFromOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    exit?: IntFieldUpdateOperationsInput | number
+    cancel?: IntFieldUpdateOperationsInput | number
     buyId?: TradesUncheckedUpdateManyWithoutBuyIdNestedInput
     sellId?: TradesUncheckedUpdateManyWithoutSellIdNestedInput
   }
@@ -9683,6 +9830,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exitFromOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    exit?: IntFieldUpdateOperationsInput | number
+    cancel?: IntFieldUpdateOperationsInput | number
   }
 
   export type AccountUpdateWithoutUserInput = {
@@ -9801,6 +9951,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     status?: string
     createdAt: Date | string
+    exitFromOrderId?: string | null
+    exit?: number
+    cancel?: number
   }
 
   export type OrdersUpdateWithoutEventInput = {
@@ -9812,6 +9965,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exitFromOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    exit?: IntFieldUpdateOperationsInput | number
+    cancel?: IntFieldUpdateOperationsInput | number
     buyId?: TradesUpdateManyWithoutBuyIdNestedInput
     sellId?: TradesUpdateManyWithoutSellIdNestedInput
     user?: UserUpdateOneRequiredWithoutOrderNestedInput
@@ -9827,6 +9983,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exitFromOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    exit?: IntFieldUpdateOperationsInput | number
+    cancel?: IntFieldUpdateOperationsInput | number
     buyId?: TradesUncheckedUpdateManyWithoutBuyIdNestedInput
     sellId?: TradesUncheckedUpdateManyWithoutSellIdNestedInput
   }
@@ -9841,6 +10000,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exitFromOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    exit?: IntFieldUpdateOperationsInput | number
+    cancel?: IntFieldUpdateOperationsInput | number
   }
 
 

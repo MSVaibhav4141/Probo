@@ -45,7 +45,6 @@ model Account {
 }
 
 
-
 model Orders{
   id String @id
   userId String
@@ -57,6 +56,9 @@ model Orders{
   price Decimal @db.Decimal(2,1)
   status String @default("pending")
   createdAt DateTime
+  exitFromOrderId  String?
+  exit Int @default(0)
+  cancel Int @default(0)
   buyId  Trades[] @relation("BuyOrder")
   sellId Trades[] @relation("SellOrder")
   user User @relation(fields: [userId] , references: [id])
