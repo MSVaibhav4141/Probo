@@ -5,7 +5,6 @@ import { getServerSession } from 'next-auth'
 import { authOption } from '../../../lib/auth'
 import OrderBook from '@components/events/Orderbook/OrderBook'
 import EventChart from '@components/events/EventChart/EventChart'
-import StatsContainer from '@components/CrickStats/StatsContainer'
 
 export default async function EventPage({ params }: { params: { slug: string } }) {
   const eventId = params.slug
@@ -29,7 +28,7 @@ export default async function EventPage({ params }: { params: { slug: string } }
         <div id="timeline" className="scroll-mt-20 mt-10">
           <EventChart eventId={eventId} prob={chart.probabilityStatus} />
         </div>
-<   StatsContainer team1="Mumbai" team2="Delhi" />
+{/* <   StatsContainer team1="Mumbai" team2="Delhi" /> */}
 
         <div id="overview" className="scroll-mt-20 mt-10 p-4 bg-white rounded-md shadow">
           <h2 className="text-lg font-semibold mb-2">Overview</h2>

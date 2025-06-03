@@ -1,27 +1,28 @@
 import { NextFunction, Request, Response } from "express";
 import { prismaClient, decimal } from '@repo/prisma/prisma'
 import connectRedis, {redisClient} from "@repo/redis-client/redis";
-import { Decimal } from "../../../../packages/prisma/generated/prisma/runtime/library";
 interface IOrder{
      eventId: string, 
      price:number,
      type:string,
      side:string, 
-     qty:number
+     qty:number,
+     exitFromOrderId?:string
 }
 
 
 export const orderController = async(req: Request<{},{},IOrder>, res: Response, next: NextFunction) => {
     
     const redis =  redisClient();
-    const {eventId, price, type, side, qty} = req.body;
+    const {eventId, price, type, side, qty, exitFromOrderId} = req.body;
 
     redis.lpush('orderQueue', JSON.stringify({
         eventId,
         price,
         type,
         side,
-      qty,
+        qty,
+        exitFromOrderId
     })
   );
   
@@ -245,8 +246,8 @@ export const createEvent = async(req:Request<{},{},{title:string, type:'bull'|'b
             case 'bull':{
                   for(let i = 0; i < price.length; i++){
                  
-                  const qty = Math.floor(liquidityPerSide * bullWeights[i]! * (0.9 + Math.random() * 0.2));
-                  const qtyNo = Math.floor(liquidityPerSide * bearWeight[i]! * (0.9 + Math.random() * 0.2));
+                  const qty = Math.ceil(liquidityPerSide * bullWeights[i]! * (0.9 + Math.random() * 0.2));
+                  const qtyNo = Math.ceil(liquidityPerSide * bearWeight[i]! * (0.9 + Math.random() * 0.2));
                   
                   orders.push({
                     eventId:event.id,
@@ -270,8 +271,8 @@ export const createEvent = async(req:Request<{},{},{title:string, type:'bull'|'b
             case 'bear':{
                   for(let i = 0; i < price.length; i++){
                  
-                  const qtyNo = Math.floor(liquidityPerSide * bullWeights[i]! * (0.9 + Math.random() * 0.2));
-                  const qty = Math.floor(liquidityPerSide * bearWeight[i]! * (0.9 + Math.random() * 0.2));
+                  const qtyNo = Math.ceil(liquidityPerSide * bullWeights[i]! * (0.9 + Math.random() * 0.2));
+                  const qty = Math.ceil(liquidityPerSide * bearWeight[i]! * (0.9 + Math.random() * 0.2));
                   
                   orders.push({
                     eventId:event.id,
@@ -295,8 +296,8 @@ export const createEvent = async(req:Request<{},{},{title:string, type:'bull'|'b
             case 'neautral':{
                   for(let i = 0; i < price.length; i++){
                  
-                  const qtyNo = Math.floor(liquidityPerSide * neautralWeight[i]! * (0.9 + Math.random() * 0.2));
-                  const qty = Math.floor(liquidityPerSide * neautralWeight[i]! * (0.9 + Math.random() * 0.2));
+                  const qtyNo = Math.ceil(liquidityPerSide * neautralWeight[i]! * (0.9 + Math.random() * 0.2));
+                  const qty = Math.ceil(liquidityPerSide * neautralWeight[i]! * (0.9 + Math.random() * 0.2));
                   
                   orders.push({
                     eventId:event.id,
@@ -339,7 +340,7 @@ export const createEvent = async(req:Request<{},{},{title:string, type:'bull'|'b
 export const getUserBalance = async(req : Request<{id:string}>, res: Response ,next: NextFunction) => {
 
     const {id} = req.params;
-
+    console.log(id);
     const balance = await prismaClient.user.findUnique({where:{id},
     select:{
         balanace:true
@@ -353,4 +354,213 @@ export const getUserBalance = async(req : Request<{id:string}>, res: Response ,n
         balance: (balance.balanace)
     })
 
+}
+
+
+export const getQtyOfPrice = async(req: Request<{}, {}, {eventId:string, type:string, side:string, price:number}>, res: Response, next: NextFunction) => {
+    
+    const redis = redisClient()
+    const {eventId, side, type, price} = req.body;
+    
+    
+    const orderBook = `orderbook:${type === 'buy' ? 'sell' : 'buy'}:${side}:${eventId}`
+
+    const data = await redis.hget(orderBook,price.toString())
+    
+    res.status(200).json({
+        qty: Number(data) || 0
+    })
+    
+}
+
+export const getEventOrders = async(req: Request<{eventId:string}>, res: Response, next: NextFunction) => {
+    const userId = 'cmb95bnyj00007kske17r1otp'
+    const { eventId } = req.params;
+    const redis = redisClient()
+
+    const event = await prismaClient.events.findUnique({where:{id:eventId}})
+
+    if(!event){
+        throw new Error('No event with this eventId')
+    }
+
+    const matched = []
+    const cancelled = []
+    const pending = []
+    const exited = []
+
+    const eventOrders = await prismaClient.orders.findMany({
+        where:{
+            eventId,
+            userId
+        }
+    })
+
+    for(const order of eventOrders){
+        const orderBookKey = `orderbook:${order.type === 'sell' ? 'buy' : 'sell'}:${order.side}:${eventId}`
+        if(order.leftQty === 0 && order.quantity > 0 && order.type === 'buy'){
+
+            const bestBid = Number(await redis.hget(orderBookKey, 'bestPrice')) || 0;
+            const bestBidQty = Number(await redis.hget(orderBookKey, 'availQty'));
+            const matchOrder = {
+                orderId: order.id,
+                investment: Number(order.price) * order.quantity,
+                currentValue: bestBid * ( bestBidQty >= order.quantity ? order.quantity : bestBidQty),
+                exit:true,
+                side:order.side 
+            }
+            matched.push(matchOrder)
+        }
+        else if(order.leftQty === 0 && order.quantity > 0 && order.type === 'sell'){
+            const buyOrder = eventOrders.find(i => i.id === order.exitFromOrderId)
+            const exitOrder = {
+                orderId: order.id,
+                investment: (Number(buyOrder?.price) || 0) * order.quantity,
+                return: Number(order.price) * order.quantity - (Number(buyOrder?.price) || 0) * order.quantity,
+                exited:true,
+                side:order.side 
+            }
+            exited.push(exitOrder)
+        }
+        else if(order.leftQty > 0 && order.type === 'buy'){
+            const bestBid = Number(await redis.hget(orderBookKey, 'bestPrice')) || 0;
+            const bestBidQty = Number(await redis.hget(orderBookKey, 'availQty'));
+
+            if(order.quantity > order.leftQty){
+                const matchOrder = {
+                   orderId: order.id,
+                   investment: Number(order.price) * (order.quantity - order.leftQty),
+                   currentValue: bestBid * (bestBidQty >= order.quantity - order.leftQty ? order.quantity - order.leftQty : bestBidQty ),
+                   exit:true,
+                   side:order.side 
+               }
+
+               const pendingOrder = {
+                    orderId: order.id,
+                    investment: Number(order.price) * order.leftQty,
+                    buyPrice: order.price,
+                    unmatch: true,
+                    side: order.side
+               }
+
+               matched.push(matchOrder)
+               pending.push(pendingOrder)
+            }
+            if(order.quantity === order.leftQty){
+                const pendingOrder = {
+                    orderId: order.id,
+                    investment: Number(order.price) * order.leftQty,
+                    buyPrice: order.price,
+                    unmatch: true,
+                    side: order.side
+               }
+               pending.push(pendingOrder)                
+            }
+
+            if(order.cancel > 0 && order.type === 'buy'){
+                const cancelOrder = {
+                    orderId: order.id,
+                    investment: Number(order.price) * order.cancel,
+                    buyPrice: Number(order.price),
+                    cancel: true,
+                    side: order.side
+                }
+
+                cancelled.push(cancelOrder)
+            }
+        }
+        else if(order.leftQty > 0 && order.type === 'sell'){
+         const buyOrder = eventOrders.find(i => i.id === order.exitFromOrderId)
+         console.log(eventOrders, order.exitFromOrderId)
+              if(order.quantity > order.leftQty){
+                 const exitOrder = {
+                orderId: order.id,
+                investment: (Number(buyOrder?.price) || 0) * (order.quantity - order.leftQty),
+                return: Number(order.price) * (order.quantity - order.leftQty) - (Number(buyOrder?.price) || 0) * (order.quantity - order.leftQty),
+                exited:true,
+                side:order.side 
+            }
+
+               const pendingExitOrder = {
+                    orderId: order.id,
+                    investment: Number(order.price) * order.leftQty,
+                    exitValue : Number(order.price) * order.leftQty,
+                    exiting: true,
+                    side: order.side
+               }
+
+               exited.push(exitOrder)
+               pending.push(pendingExitOrder)
+            }
+            if(order.quantity === order.leftQty){
+                 const pendingExitOrder = {
+                    orderId: order.id,
+                    investment: Number(order.price) * order.leftQty,
+                    exitValue : Number(order.price) * order.leftQty,
+                    exiting: true,
+                    side: order.side
+               }
+
+               pending.push(pendingExitOrder)                
+            }
+
+        }
+    }
+
+    res.status(200).send({
+        matched,
+        pending,
+        exited,
+        cancelled
+    })
+}
+
+export const cancellOrder = async(req: Request<{},{},{orderId:string, qty:number}>, res: Response, next: NextFunction) => {
+    
+    const {orderId, qty} = req.body;
+
+    await prismaClient.orders.update({where:{id:orderId},
+    data:{
+        leftQty:{decrement:qty},
+        quantity:{decrement:qty},
+        cancel:{increment:qty}
+    }
+    })
+
+    res.status(200).json({
+        message:"Order cancelled"
+    })
+    
+}
+
+export const cancellExiting = async(req: Request<{},{},{orderId:string, qty:number}>, res: Response, next: NextFunction) => {
+    
+    const {orderId, qty} = req.body;
+
+    
+    await prismaClient.$transaction(async (tx) => {
+      const exitOrder = await tx.orders.update({
+        where: { id: orderId },
+        data: {
+          leftQty: { decrement: qty },
+          quantity: { decrement: qty },
+          cancel: { increment: qty },
+        },
+      });
+    
+      if (exitOrder.exitFromOrderId) {
+        await tx.orders.update({
+          where: { id: exitOrder.exitFromOrderId },
+          data: {
+            exit: { decrement: qty },
+            quantity: { increment: qty },
+          },
+        });
+      }
+    });
+
+    res.status(200).json({
+        message:"Order cancelled"
+    })
+    
 }

@@ -51,7 +51,8 @@ interface ISetData{
                     if(parsedResult.quantity > remainingQty){
                         const leftQty = parsedResult.quantity - remainingQty;
                         parsedResult.quantity = leftQty;
-                        console.log(parsedResult)
+                        
+                        await this.redis.hincrby(`${orderBookKey}:${eventId}`, parsedResult.price.toString(), -remainingQty)
                         partialMatchedOrder.push(
                             {
                                 buyOrderId:id,
@@ -71,6 +72,8 @@ interface ISetData{
                     }
                     else if(parsedResult.quantity <= remainingQty){
                         remainingQty = remainingQty - parsedResult.quantity;
+                        await this.redis.hincrby(`${orderBookKey}:${eventId}`, parsedResult.price.toString(), -parsedResult.quantity)
+
                         matchedOrder.push(
                             {
                                 buyOrderId:id,
@@ -103,6 +106,8 @@ interface ISetData{
                         const leftQty = parsedResult.quantity - remainingQty;
                         
                         parsedResult.quantity = leftQty;
+                        await this.redis.hincrby(`${orderBookKey}:${eventId}`, parsedResult.price.toString(), -remainingQty)
+
                         partialMatchedOrder.push(
                             {
                                 buyOrderId:parsedResult.id,
@@ -121,7 +126,8 @@ interface ISetData{
                     }
                     else if(parsedResult.quantity <= remainingQty){
                         remainingQty = remainingQty - parsedResult.quantity;
-                        
+                        await this.redis.hincrby(`${orderBookKey}:${eventId}`, parsedResult.price.toString(), -parsedResult.quantity)
+
                         matchedOrder.push(
                               {
                                 buyOrderId:parsedResult.id,

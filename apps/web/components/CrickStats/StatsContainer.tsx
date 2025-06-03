@@ -3,7 +3,7 @@ import TeamStats from './TeamStats'
 import SeriesStats from './SeriesStats'
 import PlayerStats from './PlayerStats'
 import VenueStats from './VenueStats'
-import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic'  
 
 const StatsTabs = dynamic(() => import('./StatsTabs'), { ssr: false })
 

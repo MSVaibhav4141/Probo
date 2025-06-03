@@ -1,0 +1,38 @@
+FROM node:24-alpine AS build
+
+
+RUN npm i -g pnpm 
+
+WORKDIR /usr/src/app
+
+COPY ./packages ./packages
+COPY ./package.json ./package.json
+COPY ./pnpm-lock.yaml ./pnpm-lock.yaml
+
+COPY ./turbo.json ./turbo.json
+
+COPY ./apps/backend ./apps/backend
+
+RUN pnpm install
+
+RUN cd ./packages/prisma && pnpx prisma generate --verbose
+
+
+RUN cd ./apps/backend && pnpm run build
+
+FROM node:24-alpine AS prod
+
+WORKDIR /usr/src/app
+
+RUN npm i -g pnpm 
+
+COPY  --from=build /usr/src/app/apps/backend/dist .
+COPY  --from=build /usr/src/app/apps/backend/node_modules ./node_modules
+COPY  --from=build /usr/src/app/apps/packages ./packages
+
+EXPOSE 3001
+
+CMD [ "node", "index.js" ]
+
+
+

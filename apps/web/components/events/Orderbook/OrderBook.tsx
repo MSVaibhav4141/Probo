@@ -34,7 +34,7 @@ const OrderBook = ({ orderbook, eventId }: { orderbook: IOrderbookEvent; eventId
 
   const getWidthPercent = (qty: number) => {
     const percent = (qty / maxQty) * 100;
-    return percent < 5 ? 5 : percent;
+    return  percent;
   };
 
   return (
@@ -46,9 +46,9 @@ const OrderBook = ({ orderbook, eventId }: { orderbook: IOrderbookEvent; eventId
 
       <div className="flex justify-between gap-4">
         {/* YES side (left) */}
-        <div className="flex flex-col gap-1 w-1/2 items-end">
+        <div className="flex flex-col w-1/2 items-end ">
           {message?.orderbook.yes.map((i, index) => (
-            <div key={index} className="relative w-full h-6 flex items-center justify-end pr-2">
+            <div key={index} className="relative w-full h-8 flex items-center justify-end border-t-[0.5px] border-gray-200">
               {/* Quantity text (always visible, not overlapped) */}
               <div className="w-[50px] text-left z-10">{i.price}</div>
 
@@ -59,16 +59,16 @@ const OrderBook = ({ orderbook, eventId }: { orderbook: IOrderbookEvent; eventId
                   style={{ width: `${getWidthPercent(i.quantity)}%` }}
                 />
                 {/* Price inside bar, aligned to right */}
-                <span className="z-10 pr-2 text-black">{i.quantity}</span>
+                <span className="z-10 pr-2 text-black flex items-center">{i.quantity}</span>
               </div>
             </div>
           ))}
         </div>
 
         {/* NO side (right) */}
-        <div className="flex flex-col gap-1 w-1/2 items-end">
+        <div className="flex flex-col w-1/2 items-end">
           {message?.orderbook.no.map((i, index) => (
-            <div key={index} className="relative w-full h-6 flex items-center justify-end pr-2">
+            <div key={index} className="relative w-full h-8 flex items-center justify-end border-t-[0.5px] border-gray-200">
               {/* Quantity text (always visible, not overlapped) */}
               <div className="w-[50px] text-left z-10">{i.price}</div>
 
@@ -79,7 +79,7 @@ const OrderBook = ({ orderbook, eventId }: { orderbook: IOrderbookEvent; eventId
                   style={{ width: `${getWidthPercent(i.quantity)}%` }}
                 />
                 {/* Price inside bar */}
-                <span className="z-10 pr-2 text-black">{i.quantity}</span>
+                <span className="z-10 pr-2 text-black flex items-center">{i.quantity}</span>
               </div>
             </div>
           ))}

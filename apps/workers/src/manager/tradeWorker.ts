@@ -5,7 +5,7 @@ const tradeWorker = new Worker(
   "tradeSyncQueue",
   async (job) => {
     if (job.data) {
-      console.log(job.data);
+      console.log(job.data, 'asdadasdasdsajhdghsajvdgjsavdghsavjdvjsabj');
       const buyOrderId = await prismaClient.orders.findUnique({
         where: { id: job.data.orderMatched.buyOrderId },
       });

@@ -16,10 +16,12 @@ interface ProboStore{
     balance: number
     error:string | null,
     loading:boolean,
-    orderLoading: boolean
+    orderLoading: boolean,
+    orderSuccess:boolean,
     orderError: string | null
     getBalance: (id:string) => Promise<number | any>
     placeOrder: ({eventId, price, type , side , qty}: IPlaceOrder) => Promise<string >
+    setOrderFeedback:() => void;
 }
 const useProboStore = create<ProboStore>()((set) => {
     return{
@@ -28,6 +30,7 @@ const useProboStore = create<ProboStore>()((set) => {
         error:null,
         orderLoading: false,
         orderError:null,
+        orderSuccess:false,
         getBalance: async(id) => {
             try{
                 set({loading:true})
@@ -55,13 +58,18 @@ const useProboStore = create<ProboStore>()((set) => {
                     Authorization : ''
                 }
             })
-
+            set({orderSuccess:true})
             set({orderLoading: false})
             return data;
-            }catch(e:any){
-                set({orderError:e.message})
+        }catch(e:any){
+            set({orderError:e.message})
+            set({orderSuccess:false})
+            set({orderLoading: false})
             }
            
+        },
+        setOrderFeedback: () => {
+            set({orderSuccess:false})
         }
     }
 })
