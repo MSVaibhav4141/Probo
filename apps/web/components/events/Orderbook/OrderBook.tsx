@@ -17,8 +17,9 @@ interface IOrderbookEvent {
 }
 
 const OrderBook = ({ orderbook, eventId }: { orderbook: IOrderbookEvent; eventId: string }) => {
+  console.log(process.env.NEXT_PUBLIC_WS)
   const [message, setMessage] = useState<IOrderbookEvent | null>(orderbook);
-  const liveMessage = useWebsocket('ws://localhost:8080', eventId);
+  const liveMessage = useWebsocket(`${process.env.NEXT_PUBLIC_WS}`, eventId);
 
   useEffect(() => {
     if (liveMessage) {

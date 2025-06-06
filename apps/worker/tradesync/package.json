@@ -1,0 +1,21 @@
+{
+  "name": "tradesync",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -b",
+    "start": "node ./dist/tradeWorker.js",
+    "dev": "npm run build &&  npm run start" 
+  },
+  "dependencies": {
+    "@repo/prisma": "workspace:*",
+    "bullmq": "^5.52.2"
+  },
+   "devDependencies": {
+    "@repo/typescript-config": "workspace:*"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

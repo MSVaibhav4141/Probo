@@ -1,0 +1,21 @@
+{
+  "name": "dbsync",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -b",
+    "start": "node ./dist/dbsync.js",
+    "dev": "pnpm run build &&  pnpm run start" 
+  },
+  "dependencies": {
+    "@repo/prisma": "workspace:*",
+    "bullmq": "^5.52.2"
+  },
+   "devDependencies": {
+    "@repo/typescript-config": "workspace:*"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

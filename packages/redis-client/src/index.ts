@@ -1,4 +1,3 @@
-import { createClient } from "redis";
 import Redis from "ioredis";
 let isConnected = false;
 
@@ -8,8 +7,11 @@ export type RedisClientType = Redis;
 
 export default async function connectRedis(): Promise<void>{
     if(!client){
-        client = new Redis()
-        client.on('error', (err: any)=> {console.log(err)})
+        console.log('hiiii bhai ', process.env.REDIS_URL)
+        client = new Redis({
+            host:process.env.REDIS_URL || 'localhost'
+        })
+        client.on('error', (err: any)=> {console.log(err,process.env.REDIS_URL,process.env.DATABASE_URL)})
     }
     
 }
@@ -21,5 +23,9 @@ export const redisClient = (): Redis => {
     return client;
 }
 
-export const pub = () => new Redis()
-export const sub = () => new Redis()
+export const pub = () => new Redis({
+            host:process.env.REDIS_URL || 'localhost'
+        })
+export const sub = () => new Redis({
+            host:process.env.REDIS_URL || 'localhost'
+        })

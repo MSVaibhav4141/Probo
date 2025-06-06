@@ -1,8 +1,8 @@
-import { pub, redisClient } from "@repo/redis-client/redis";
+import { pub } from "@repo/redis-client/redis";
 import { Worker } from 'bullmq'
 
 const publisher = pub()
-
+console.log(process.env.REDIS_URL)
 const pubWorker = new Worker('pubSyncQueue', async( job ) => {
     const {eventId , orderbook} = job.data;
 
@@ -67,7 +67,7 @@ const pubWorker = new Worker('pubSyncQueue', async( job ) => {
     }
 },
 {connection:{
-    host:"127.0.0.1",
+    host:process.env.REDIS_URL,
     port:6379
 }})
 

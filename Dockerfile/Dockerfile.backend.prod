@@ -1,0 +1,38 @@
+FROM node:24-alpine AS deps
+
+RUN npm i -g pnpm 
+
+WORKDIR /usr/src/app
+
+COPY ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml ./
+COPY ./turbo.json ./turbo.json
+COPY ./packages ./packages
+
+RUN pnpm install --frozen-lockfile
+
+FROM deps AS build
+
+COPY ./apps/backend ./apps/backend
+
+RUN pnpm --filter @repo/prisma exec prisma generate
+
+RUN pnpm --filter backend... install 
+RUN pnpm --filter backend... run build 
+
+FROM node:24-alpine AS prod
+
+WORKDIR /usr/src/app
+
+RUN npm i -g pnpm 
+
+COPY  --from=build /usr/src/app/apps/backend/dist .
+COPY  --from=build /usr/src/app/apps/backend/package.json ./
+COPY  --from=build /usr/src/app/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY  --from=build /usr/src/app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY  --from=build /usr/src/app/packages ./packages
+
+RUN pnpm install
+
+EXPOSE 3001
+
+CMD [ "node", "index.js" ]

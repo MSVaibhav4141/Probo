@@ -10,7 +10,7 @@ interface IPlaceOrder {
     qty: number
 }
 
-const server_url = process.env.NEXT_PUBLIC_SERVER_ENDPOINT
+const server_url = process.env.NEXT_PUBLIC_SERVER_ENDPOINT_STORE
 console.log(server_url)
 interface ProboStore{
     balance: number

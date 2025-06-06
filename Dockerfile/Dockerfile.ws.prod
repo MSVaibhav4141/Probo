@@ -1,0 +1,37 @@
+FROM node:24-alpine AS deps
+
+RUN npm i -g pnpm 
+
+WORKDIR /usr/src/app
+
+COPY ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml ./
+COPY ./turbo.json ./turbo.json
+COPY ./packages/redis-client ./packages/redis-client/
+COPY ./packages/typescript-config ./packages/typescript-config/
+
+RUN pnpm install --frozen-lockfile
+
+FROM deps AS build
+
+COPY ./apps/ws ./apps/ws/
+
+RUN pnpm --filter ws install 
+RUN pnpm --filter ws run build 
+
+FROM node:24-alpine AS prod
+
+WORKDIR /usr/src/app
+
+RUN npm i -g pnpm 
+
+COPY  --from=build /usr/src/app/apps/ws/dist .
+COPY  --from=build /usr/src/app/apps/ws/package.json ./
+COPY  --from=build /usr/src/app/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY  --from=build /usr/src/app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY  --from=build /usr/src/app/packages ./packages
+
+RUN pnpm install
+
+EXPOSE 8080
+
+CMD [ "node", "index.js" ]

@@ -65,7 +65,7 @@ const tradeWorker = new Worker(
   },
   {
     connection: {
-      host: "127.0.0.1",
+      host: process.env.REDIS_URL || 'localhost',
       port: 6379,
     },
   }

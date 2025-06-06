@@ -1,6 +1,7 @@
 import { Worker } from "bullmq";
 import { prismaClient } from "@repo/prisma/prisma";
 
+console.log(process.env.REDIS_URL)
 const dbWorker = new Worker(
   "dbSyncQueue",
   async (job) => {
@@ -35,7 +36,7 @@ const dbWorker = new Worker(
   },
   {
     connection: {
-      host: "127.0.0.1",
+      host: process.env.REDIS_URL || 'localhost',
       port: 6379,
     },
   }

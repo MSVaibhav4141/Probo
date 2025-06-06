@@ -6,12 +6,16 @@ import { authOption } from '../../../lib/auth'
 import OrderBook from '@components/events/Orderbook/OrderBook'
 import EventChart from '@components/events/EventChart/EventChart'
 
-export default async function EventPage({ params }: { params: { slug: string } }) {
-  const eventId = params.slug
-  const session = await getServerSession(authOption)
 
-  const orderbook = await fetch(`http://localhost:3001/v1/get/orderbook/${eventId}`).then(res => res.json())
-  const chart = await fetch(`http://localhost:3001/v1/get/chart/${eventId}?duration=0`).then(res => res.json())
+type Params = Promise<{ slug: string }>
+
+
+export default async function EventPage({ params }: { params: Params }){
+  const { slug : eventId } = await params;
+  const session = await getServerSession(authOption)
+console.log(process.env.NEXT_PUBLIC_SERVER_ENDPOINT, process.env.NEXT_PUBLIC_WS)
+  const orderbook = await fetch(`${process.env.NEXT_PUBLIC_SERVER_ENDPOINT}/get/orderbook/${eventId}`).then(res => res.json())
+  const chart = await fetch(`${process.env.NEXT_PUBLIC_SERVER_ENDPOINT}/get/chart/${eventId}?duration=0`).then(res => res.json())
 
   return (
     <div className="flex h-[100vh]">

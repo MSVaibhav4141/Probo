@@ -1,0 +1,35 @@
+FROM node:24-alpine AS build
+
+RUN npm i -g pnpm
+
+WORKDIR /usr/src/app
+
+COPY ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml ./
+
+COPY ./apps/worker/tradesync/package.json ./worker/
+COPY ./packages/prisma ./packages/prisma
+COPY ./packages/typescript-config ./packages/typescript-config/
+
+COPY ./turbo.json ./turbo.json
+
+RUN pnpm install
+
+COPY ./apps/worker/tradesync ./worker/
+
+RUN cd packages/prisma && pnpx prisma generate 
+
+RUN cd worker && pnpm install && pnpm add  -D @types/node && pnpm run build
+
+
+FROM node:24-alpine AS prod
+
+COPY --from=build usr/src/app/worker/dist .
+COPY --from=build usr/src/app/worker/package.json ./
+COPY --from=build usr/src/app/packages ./packages/
+COPY --from=build usr/src/app/pnpm-lock.yaml ./
+COPY --from=build usr/src/app/pnpm-workspace.yaml ./
+RUN npm i -g pnpm
+
+RUN pnpm install
+
+CMD [ "node", "tradeWorker.js" ]
