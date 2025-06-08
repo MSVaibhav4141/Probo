@@ -32,7 +32,7 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            docker run -d \
+            sudo docker run -d \
               --name probackend \
               --network probo \
               -e REDIS_URL=${{ secrets.REDIS_URL }} \
