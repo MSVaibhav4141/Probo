@@ -1,4 +1,4 @@
-name: CI/CD For frontend
+name: CI/CD For WS
 on:
   push:
     branches: [main]
@@ -15,10 +15,33 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
         
-      # - name: Build and Push 
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     context: .
-      #     file: ./Dockerfile/Dockerfile.web.prod
-      #     push: true
-      #     tags: msvaibhav4141/probo:${{ github.sha }}
+      - name: Build and Push 
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile/Dockerfile.ws.prod
+          push: true
+          tags: msvaibhav4141/probo-ws:${{ github.sha }}
+
+      - name: SSH to instance
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+             if [ "$(sudo docker ps -aq -f name=prows)" ]; then
+               echo "Stopping and removing existing container..."
+               sudo docker rm -f prows
+             else
+               echo "No existing container found. Proceeding to run a new one."
+             fi
+             sudo docker run -d \
+               --name prows \
+               --network probo \
+               -e REDIS_URL=${{ secrets.REDIS_URL }} \
+               -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+               -p 8080:8080 \
+               msvaibhav4141/probo-ws:${{ github.sha }}
+         

@@ -15,10 +15,42 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
         
-      # - name: Build and Push 
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     context: .
-      #     file: ./Dockerfile/Dockerfile.web.prod
-      #     push: true
-      #     tags: msvaibhav4141/probo:${{ github.sha }}
+      - name: Build and Push 
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile/Dockerfile.web.prod
+          push: true
+          no-cache: true
+          build-args: |
+            DATABASE_URL=${{secrets.DATABASE_URL}}
+            STORE_URL=http://${{secrets.HOST}}:3000/v1
+            WS_URL=ws://${{secrets.HOST}}:8080
+          tags: msvaibhav4141/probo-web:${{ github.sha }}
+
+      - name: SSH to instance
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+             if [ "$(sudo docker ps -aq -f name=proweb)" ]; then
+               echo "Stopping and removing existing container..."
+               sudo docker rm -f proweb
+             else
+               echo "No existing container found. Proceeding to run a new one."
+             fi
+             sudo docker run -d \
+               --name proweb \
+               --network probo \
+               -e DATABASE_URL='${{ secrets.DATABASE_URL }}'\
+               -e NEXTAUTH_SECRET='${{ secrets.NEXTAUTH_SECRET }}' \
+               -e GOOGLE_CLIENT_ID='${{ secrets.GOOGLE_CLIENT_ID }}' \
+               -e GOOGLE_CLIENT_SEC='${{ secrets.GOOGLE_CLIENT_SEC }}' \
+               -e NEXT_PUBLIC_SERVER_ENDPOINT='${{ secrets.NEXT_PUBLIC_SERVER_ENDPOINT }}' \
+               -e NEXTAUTH_URL=${{ secrets.HOST }} \
+               -p 3000:3000 \
+               msvaibhav4141/probo-web:${{ github.sha }}
+        

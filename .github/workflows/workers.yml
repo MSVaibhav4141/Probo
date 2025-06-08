@@ -1,4 +1,4 @@
-name: CI/CD For frontend
+name: CI/CD For Workers
 on:
   push:
     branches: [main]
@@ -15,10 +15,89 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
         
-      # - name: Build and Push 
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     context: .
-      #     file: ./Dockerfile/Dockerfile.web.prod
-      #     push: true
-      #     tags: msvaibhav4141/probo:${{ github.sha }}
+      - name: Build and Push DBSYNC
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile/workers/Dockerfile.dbsync
+          push: true
+          tags: msvaibhav4141/probo-db:${{ github.sha }}
+
+      - name: Build and Push ORDERWORKER
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile/workers/Dockerfile.orderworker
+          push: true
+          tags: msvaibhav4141/probo-oworker:${{ github.sha }}
+
+      - name: Build and Push PUBSUBWORKER
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile/workers/Dockerfile.pubsubworker
+          push: true
+          tags: msvaibhav4141/probo-pubsub:${{ github.sha }}
+
+      - name: Build and Push TRADESYNCWORKER
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile/workers/Dockerfile.tradesync
+          push: true
+          tags: msvaibhav4141/probo-trade:${{ github.sha }}
+
+      - name: SSH to instance
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            declare -a containers=("prodb" "proworker" "propubsub" "protrade")
+              for cname in "${containers[@]}"; do
+                if [ "$(sudo docker ps -aq -f name=$cname)" ]; then
+                  echo "Stopping and removing existing container: $cname"
+                  sudo docker rm -f $cname
+                else
+                  echo "No existing container named $cname found."
+                fi
+              done
+              echo "Starting updated containers..."
+
+              echo "Starting dbsync containers..."
+              sudo docker run -d \
+                --name prodb \
+                --network probo \
+                -e REDIS_URL=${{ secrets.REDIS_URL }} \
+                -e DATABASE_URL='${{ secrets.DATABASE_URL }}' \
+                msvaibhav4141/probo-db:${{ github.sha }}
+                
+              echo "Starting orderworker containers..."
+              sudo docker run -d \
+                --name proworker \
+                --network probo \
+                -e REDIS_URL=${{ secrets.REDIS_URL }} \
+                -e DATABASE_URL='${{ secrets.DATABASE_URL }}' \
+                msvaibhav4141/probo-oworker:${{ github.sha }}
+                
+              echo "Starting pubsub containers..."
+              sudo docker run -d \
+                --name propubsub \
+                --network probo \
+                -e REDIS_URL=${{ secrets.REDIS_URL }} \
+                -e DATABASE_URL='${{ secrets.DATABASE_URL }}' \
+                msvaibhav4141/probo-pubsub:${{ github.sha }}
+                
+              echo "Starting tradeworker containers..."
+              sudo docker run -d \
+                --name protrade \
+                --network probo \
+                -e REDIS_URL=${{ secrets.REDIS_URL }} \
+                -e DATABASE_URL='${{ secrets.DATABASE_URL }}' \
+                msvaibhav4141/probo-trade:${{ github.sha }}
+
+
+
+         

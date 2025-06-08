@@ -42,7 +42,7 @@ jobs:
                --name probackend \
                --network probo \
                -e REDIS_URL=${{ secrets.REDIS_URL }} \
-               -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+               -e DATABASE_URL='${{ secrets.DATABASE_URL }}' \
                -p 3001:3001 \
                msvaibhav4141/probo-backend:${{ github.sha }}
          
