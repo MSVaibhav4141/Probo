@@ -21,9 +21,8 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "recharts": "^2.15.3",
-    "zustand": "^5.0.4",
-    "uuid": "^11.1.0"
-
+    "uuid": "^11.1.0",
+    "zustand": "^5.0.4"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

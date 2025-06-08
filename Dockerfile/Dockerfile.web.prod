@@ -1,10 +1,10 @@
-FROM node:23-alpine
+FROM node:23-alpine AS build
 
 ARG DATABASE_URL
+ARG STORE_URL
+ARG WS_URL
 
 WORKDIR /usr/src/app
-
-RUN apk add --no-cache python3 make g++ linux-headers eudev-dev
 
 RUN apk add --no-cache openssl libc6-compat
 
@@ -24,26 +24,27 @@ WORKDIR /usr/src/app/apps/web
 RUN pnpm install
 
 WORKDIR /usr/src/app/packages/prisma
-# Generate Prisma client
 RUN DATABASE_URL=$DATABASE_URL npx prisma generate
 
 WORKDIR /usr/src/app/packages/ui
 RUN pnpm run build
 
-# Expose port for the client app
-EXPOSE 3000
 
 WORKDIR /usr/src/app/apps/web
-ENV NEXTAUTH_SECRET=mysecret
-ENV GOOGLE_CLIENT_ID=764540667761-48sekjn798bvaa8ch8opmd5r9di3rnm2.apps.googleusercontent.com
-ENV GOOGLE_CLIENT_SEC=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   
-ENV DATABASE_URL="postgresql://neondb_owner:npg_8YCpWMU1tgXA@ep-late-shadow-a4kynd14-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require"
-ENV NEXT_PUBLIC_SERVER_ENDPOINT="http://probackend:3001/v1"
-ENV NEXT_PUBLIC_WS="ws://localhost:8080"
-ENV NEXT_PUBLIC_SERVER_ENDPOINT_STORE="http://localhost:3001/v1"
-ENV NEXTAUTH_URL=http://localhost:3000
 
+ENV NEXT_PUBLIC_SERVER_ENDPOINT_STORE=${STORE_URL}
+ENV NEXT_PUBLIC_WS=${WS_URL}
 
 # Build and start the client app
 RUN pnpm run build 
-CMD ["pnpm", "start"]
+
+FROM node:23-alpine AS prod
+
+RUN apk add --no-cache openssl libc6-compat
+
+COPY --from=build /usr/src/app/apps/web/.next/standalone ./
+COPY --from=build /usr/src/app/apps/web/public ./apps/web/public
+COPY --from=build /usr/src/app/apps/web/.next/static ./apps/web/.next/static
+EXPOSE 3000
+
+CMD ["node", "apps/web/server.js"]
