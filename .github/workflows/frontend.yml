@@ -50,7 +50,7 @@ jobs:
                -e GOOGLE_CLIENT_ID='${{ secrets.GOOGLE_CLIENT_ID }}' \
                -e GOOGLE_CLIENT_SEC='${{ secrets.GOOGLE_CLIENT_SEC }}' \
                -e NEXT_PUBLIC_SERVER_ENDPOINT='${{ secrets.NEXT_PUBLIC_SERVER_ENDPOINT }}' \
-               -e NEXTAUTH_URL=${{ secrets.HOST }} \
+               -e NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }} \
                -p 3000:3000 \
                msvaibhav4141/probo-web:${{ github.sha }}
         
