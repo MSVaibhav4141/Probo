@@ -6,6 +6,9 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+
 }
 
 datasource db {
@@ -83,3 +86,6 @@ model Trades{
   buyId Orders @relation(name: "BuyOrder", fields: [buyOrderId] , references: [id]) 
   sellId Orders @relation(name:"SellOrder",fields: [sellOrderId] , references: [id]) 
 }
+
+
+

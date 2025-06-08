@@ -74,6 +74,9 @@ importers:
       '@next-auth/prisma-adapter':
         specifier: ^1.0.7
         version: 1.0.7(@prisma/client@6.9.0(prisma@6.9.0(typescript@5.8.2))(typescript@5.8.2))(next-auth@4.24.11(next@15.3.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
+      '@prisma/nextjs-monorepo-workaround-plugin':
+        specifier: ^6.9.0
+        version: 6.9.0
       '@repo/prisma':
         specifier: workspace:*
         version: link:../../packages/prisma
@@ -775,6 +778,9 @@ packages:
 
   '@prisma/get-platform@6.9.0':
     resolution: {integrity: sha512-/B4n+5V1LI/1JQcHp+sUpyRT1bBgZVPHbsC4lt4/19Xp4jvNIVcq5KYNtQDk5e/ukTSjo9PZVAxxy9ieFtlpTQ==}
+
+  '@prisma/nextjs-monorepo-workaround-plugin@6.9.0':
+    resolution: {integrity: sha512-nSuu2piWfe108Z5X1kvYXwY4lVkVAekxevNkIKRLpv2gUPibg5nUiy2NjfSco21pX6t+yzPfhL4nEB0I2Rt8vA==}
 
   '@redis/bloom@5.5.5':
     resolution: {integrity: sha512-M0GDmw8k0EOFoSpmMjhFUADk/apoano97fLSpT81opgmkkDtBB9iB6l6husxnzK5t2qNz/o0+OCVG9g6lEEwKw==}
@@ -3646,6 +3652,8 @@ snapshots:
   '@prisma/get-platform@6.9.0':
     dependencies:
       '@prisma/debug': 6.9.0
+
+  '@prisma/nextjs-monorepo-workaround-plugin@6.9.0': {}
 
   '@redis/bloom@5.5.5(@redis/client@5.5.5)':
     dependencies:

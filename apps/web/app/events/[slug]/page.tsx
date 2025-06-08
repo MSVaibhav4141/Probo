@@ -50,3 +50,5 @@ console.log(process.env.NEXT_PUBLIC_SERVER_ENDPOINT, process.env.NEXT_PUBLIC_WS)
   )
 }
 
+
+

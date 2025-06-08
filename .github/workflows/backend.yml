@@ -32,10 +32,17 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            sudo docker run -d \
-              --name probackend \
-              --network probo \
-              -e REDIS_URL=${{ secrets.REDIS_URL }} \
-              -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
-              -p 3001:3001 \
-              msvaibhav4141/probo-backend:${{ github.sha }}
+             if [ "$(docker ps -aq -f name=probackend)" ]; then
+               echo "Stopping and removing existing container..."
+               docker stop probackend && docker rm probackend
+             else
+               echo "No existing container found. Proceeding to run a new one."
+             fi
+             sudo docker run -d \
+               --name probackend \
+               --network probo \
+               -e REDIS_URL=${{ secrets.REDIS_URL }} \
+               -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+               -p 3001:3001 \
+               msvaibhav4141/probo-backend:${{ github.sha }}
+         
