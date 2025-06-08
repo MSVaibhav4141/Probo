@@ -2,6 +2,7 @@
 
 # Dependencies
 **/node_modules
+**/generated
 .pnp
 .pnp.js
 
@@ -11,7 +12,6 @@
 .env.development.local
 .env.test.local
 .env.production.local
-**/generated
 # Testing
 coverage
 
