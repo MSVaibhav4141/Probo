@@ -24,7 +24,7 @@ jobs:
           no-cache: true
           build-args: |
             DATABASE_URL=${{secrets.DATABASE_URL}}
-            STORE_URL=http://${{secrets.HOST}}:3000/v1
+            STORE_URL=http://${{secrets.HOST}}:3001/v1
             WS_URL=ws://${{secrets.HOST}}:8080
           tags: msvaibhav4141/probo-web:${{ github.sha }}
 
