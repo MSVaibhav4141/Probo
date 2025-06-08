@@ -32,9 +32,9 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-             if [ "$(docker ps -aq -f name=probackend)" ]; then
+             if [ "$(sudo docker ps -aq -f name=probackend)" ]; then
                echo "Stopping and removing existing container..."
-               docker stop probackend && docker rm probackend
+               sudo docker rm -f probackend
              else
                echo "No existing container found. Proceeding to run a new one."
              fi
