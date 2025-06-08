@@ -1,4 +1,4 @@
-name: CI/CD For frontend
+name: CI/CD For backend
 on:
   push:
     branches: [main]
@@ -29,7 +29,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
+          key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
             docker run -d \
