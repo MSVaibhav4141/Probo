@@ -22,11 +22,29 @@ export default async function EventPortfolioPage({params}:{
     const {eventId} = await params
     const SERVER = process.env.NEXT_PUBLIC_SERVER_ENDPOINT;
     console.log(token)
-    const {data} = await axios.get(`${SERVER}/get/event/order/${eventId}`,
-      {headers:{
-        Authorization: token
-      }} 
-    )
+    let data;
+    try {
+    const res = await axios.get(`${SERVER}/get/event/order/${eventId}`, {
+      headers: { Authorization: token },
+    });
+    data = res.data;
+  } catch (err) {
+    // Log full error to your server logs
+    console.error("🔥 Error fetching event orders:", err);
+
+    // Render graceful fallback UI
+    return (
+      <div className="p-4 space-y-2">
+        <h2 className="text-lg font-semibold text-red-600">
+          Unable to load your orders right now.
+        </h2>
+        <p className="text-sm text-gray-500">
+          Please refresh the page or try again later.
+        </p>
+      </div>
+    );
+  }
+
 
     const result = await prismaClient.events.findUnique({
       where:{
