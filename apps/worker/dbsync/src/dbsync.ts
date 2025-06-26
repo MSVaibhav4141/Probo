@@ -12,7 +12,7 @@ const dbWorker = new Worker(
         const parentOrderId = job.data.exitFromOrderId;
         const exitQty = job.data.quantity;
         await prismaClient.$transaction([
-          prismaClient.orders.update({
+          prismaClient.orders.update({ 
             where: { id: parentOrderId },
             data: {
               quantity: { decrement: exitQty },
