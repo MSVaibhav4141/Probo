@@ -35,10 +35,16 @@ export const useWebsocket = (url: string, eventId: string) => {
       }
     };
 
-    return () => {
-      if (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING) {
+   return () => {
+      if (socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify({ eventId, message: "Unsubscribe" }));
         socket.close();
+      } else {
+        // If it's still CONNECTING, wait for it to open, then close
+        socket.onopen = () => {
+          socket.send(JSON.stringify({ eventId, message: "Unsubscribe" }));
+          socket.close();
+        };
       }
     };
   }, [url, eventId]);

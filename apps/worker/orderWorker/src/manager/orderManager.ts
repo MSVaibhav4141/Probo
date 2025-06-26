@@ -1,3 +1,4 @@
+const MULTIPLIER = 1e13;
 import { RedisClientType } from "@repo/redis-client/redis";
 
 type IManageOrder ={
@@ -65,7 +66,7 @@ interface ISetData{
                         remainingQty = 0;
                         await this.redis.multi()
                         .zrem(orderBookKey,rawRes)
-                        .zadd(orderBookKey,parsedResult.price * 1e10 + (parsedResult.createdAt), JSON.stringify(parsedResult) )
+                        .zadd(orderBookKey,parsedResult.price * MULTIPLIER + (parsedResult.createdAt), JSON.stringify(parsedResult) )
                         .exec()
                         
                         break;
@@ -120,7 +121,7 @@ interface ISetData{
                         remainingQty = 0;
                         await this.redis.multi()
                         .zrem(orderBookKey, rawRes )
-                        .zadd(orderBookKey,parsedResult.price * 1e10 + (parsedResult.createdAt), JSON.stringify(parsedResult) )
+                        .zadd(orderBookKey,-parsedResult.price * MULTIPLIER + (parsedResult.createdAt), JSON.stringify(parsedResult) )
                         .exec()
                         break;
                     }

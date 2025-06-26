@@ -16,15 +16,15 @@ interface IOrderBook {
         const result = await redis.brpop('orderQueue', 0)
         console.log(result)
         if(result){
-            const {type, side , qty , price, eventId, exitFromOrderId} = JSON.parse(result[1])
+            const {type, side , qty , price, eventId, exitFromOrderId, userId} = JSON.parse(result[1])
             const orderBookId = `orderbook:${type}:${side}`
             const manageOrder = OrderManager.getInstace(redis)
             const orderId = uuidv4()
             const { matchedOrder,partialMatchedOrder,remainingQty} = await manageOrder.matchOrder(orderId, type ,side ,qty ,price,eventId)
-            console.log('dbbbbbbbbbbbbb', orderId)
+            console.log('dbbbbbbbbbbbbb', orderId,'exitOrderId' ,exitFromOrderId)
             await dbSync.add('syncDb', {
                  id:orderId,
-                 userId : 'cmbgy5ty800007klktdyx9s6f',
+                 userId,
                  eventId: eventId, 
                  price,
                  type,
@@ -47,18 +47,22 @@ interface IOrderBook {
                         await redis.hset(`${orderBookId}:${eventId}`, {[price] : remainingQty})
                         
                     }
-
-                    console.log('redissssss', {id:orderId, quantity:remainingQty, price, createdAt:time,eventId})                    
-                    await redis.zadd(orderBookId, price * MULTIPLIER + (type === 'sell' ? time : MAX_TIMESTAMP - time),JSON.stringify({id:orderId, quantity:remainingQty, price, createdAt:time,eventId}))
+                     const score = type === 'sell'
+                     ? price * MULTIPLIER + time       // sell: lower price first
+                     : -price * MULTIPLIER + time;
+                    
+                    console.log(price, score)                    
+                    await redis.zadd(orderBookId, score,JSON.stringify({id:orderId, quantity:remainingQty, price, createdAt:time,eventId}))
+                    // await redis.zadd(orderBookId, price * MULTIPLIER + (type === 'sell' ? time : MAX_TIMESTAMP - time),JSON.stringify({id:orderId, quantity:remainingQty, price, createdAt:time,eventId}))
+                   
                     
                 }
 
                 let bestPrice: number | null = null;
                 
                 let orderBookKey : string = `orderbook:${type === 'buy' ? 'sell' : 'buy'}:${side}`
-                const res = type === 'sell'
-                  ? await redis.zrange(orderBookId, 0, -1)
-                  : await redis.zrevrange(orderBookId, 0, -1);
+                const res = await redis.zrange(orderBookId, 0, -1); 
+
                   
                 if (res[0]) {
                   bestPrice = JSON.parse(res[0]).price;

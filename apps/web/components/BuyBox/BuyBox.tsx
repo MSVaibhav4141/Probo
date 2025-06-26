@@ -6,7 +6,7 @@ import useProboStore from "../../store/store"
 import { SessionProvider, useSession } from "next-auth/react"
 import axios from "axios"
 
-const BuyBoxSession = ({ eventId, userId }: { eventId: string, userId: string }) => {
+const BuyBoxSession = ({ eventId, userId, probabilityNo, probabilityYes }: { eventId: string, userId: string, probabilityYes:number, probabilityNo: number }) => {
   const [price, setPrice] = useState(0.5);
   const [qty, setQty] = useState(2);
   const [availableQty, setAvailableQty] = useState(0);
@@ -18,6 +18,7 @@ const BuyBoxSession = ({ eventId, userId }: { eventId: string, userId: string })
   const [side, setSide] = useState('yes');
   const type = 'buy';
 
+  console.log(session)
   useEffect(() => {
     getBalance(userId).then(res => {
       setBal(res);
@@ -32,7 +33,7 @@ const BuyBoxSession = ({ eventId, userId }: { eventId: string, userId: string })
 
 
   useEffect(() => {
-  const data = axios.post('/api/stocksQty', {
+  axios.post('/api/stocksQty', {
     eventId,
     price,
     type,
@@ -49,15 +50,17 @@ const BuyBoxSession = ({ eventId, userId }: { eventId: string, userId: string })
 
   }, [price, side])
   const buyBid = async () => {
-  const data =  await placeOrder({ eventId, price, type, side, qty });
-
-  if(data){
-    setOrderSuccess(true)
-    setTimeout(() => {
-      setOrderSuccess(false)
-    }, 2000);
+  if(session.data?.backendToken){
+    const data =  await placeOrder({ eventId, price, type, side, qty, backendToken:session.data?.backendToken });
+    
+    if(data){
+      setOrderSuccess(true)
+      setTimeout(() => {
+        setOrderSuccess(false)
+      }, 2000);
+    }
   }
-  }
+}
 
   return (
     <div className="w-full bg-white rounded-xl p-4 shadow-md text-sm overflow-hidden relative">
@@ -68,7 +71,7 @@ const BuyBoxSession = ({ eventId, userId }: { eventId: string, userId: string })
       <p className="text-success">Bid Submitted</p>
       </div>
       )}
-      <TabButton currentState={side} setState={setSide} />
+      <TabButton currentState={side} setState={setSide} probabiltyNo={probabilityNo} probabilityYes={probabilityYes} />
 
       <div className="mt-3">
         <p className="text-xs font-semibold border border-gray-300 px-3 py-1 rounded-2xl inline-block">Set price</p>
@@ -117,10 +120,11 @@ const BuyBoxSession = ({ eventId, userId }: { eventId: string, userId: string })
   );
 }
 
-export const BuyBox = ({ eventId, userId }: { eventId: string, userId: string | any }) => {
+export const BuyBox = ({ eventId, userId, prob }: { eventId: string, userId: string | any, prob: {probabiltyYes:number, probabiltyNo: number} }) => {
+  console.log(prob.probabiltyNo, prob.probabiltyYes, 'akdhsbjhfbshudbjfdsbfjsvdjvfjdsvfj')
   return (
     <SessionProvider>
-      <BuyBoxSession eventId={eventId} userId={userId} />
+      <BuyBoxSession eventId={eventId} userId={userId} probabilityYes={prob.probabiltyYes} probabilityNo={prob.probabiltyNo} />
     </SessionProvider>
   );
 }

@@ -15,8 +15,9 @@ export const orderController = async(req: Request<{},{},IOrder>, res: Response, 
     
     const redis =  redisClient();
     const {eventId, price, type, side, qty, exitFromOrderId} = req.body;
-
+    console.log(req.body)
     redis.lpush('orderQueue', JSON.stringify({
+        userId:req.user,
         eventId,
         price,
         type,
@@ -218,9 +219,9 @@ const getPrevOrders = async(evId:string, before:number): Promise<{probYes:number
 }
 
 
-export const createEvent = async(req:Request<{},{},{title:string, type:'bull'|'bear'|'neautral', startTime: Date, endTime:Date, liquidity:number}> , res: Response, next: NextFunction) => {
+export const createEvent = async(req:Request<{},{},{title:string, type:'bull'|'bear'|'neautral', duration:number, liquidity:number}> , res: Response, next: NextFunction) => {
 
-    const {title , type, startTime, endTime, liquidity} = req.body;
+    const {title , type, duration, liquidity} = req.body;
     const orders:IOrder[] = []
     const redis =  redisClient();
     const neautralWeight = [0.07, 0.10, 0.13, 0.15, 0.15, 0.13, 0.10, 0.07]
@@ -237,8 +238,8 @@ export const createEvent = async(req:Request<{},{},{title:string, type:'bull'|'b
             data:{
                 title,
                 status:'ongoing',
-                startTime: new Date(startTime),
-                EndTime: new Date(endTime)
+                startTime: new Date(),
+                EndTime: new Date(Date.now() + (duration * 24 * 60 * 60 * 1000))
             }
         })
 
@@ -320,11 +321,12 @@ export const createEvent = async(req:Request<{},{},{title:string, type:'bull'|'b
         }
 
         for(const {eventId,price, type,side, qty} of orders){
-            console.log(eventId,price, type,side, qty)
+            console.log(req.user)
            redis.lpush('orderQueue', JSON.stringify({
             eventId,
             price,
             type,
+            userId: req.user,
             side,
             qty,
         })
@@ -362,19 +364,28 @@ export const getQtyOfPrice = async(req: Request<{}, {}, {eventId:string, type:st
     const redis = redisClient()
     const {eventId, side, type, price} = req.body;
     
-    
-    const orderBook = `orderbook:${type === 'buy' ? 'sell' : 'buy'}:${side}:${eventId}`
+    const orderBook = `orderbook:${type === 'buy' ? 'sell' : 'buy'}:${side}:${eventId}`;
 
-    const data = await redis.hget(orderBook,price.toString())
+     const allEntries = await redis.hgetall(orderBook);
+
+      let totalQty = 0;
+     for (const [key, value] of Object.entries(allEntries)) {
+        const priceKey = parseFloat(key);
+        const qty = Number(value);
+
+        if (priceKey <= price) {
+        totalQty += qty;
+    }
+  }
     
     res.status(200).json({
-        qty: Number(data) || 0
+        qty: Number(totalQty) || 0
     })
     
 }
 
 export const getEventOrders = async(req: Request<{eventId:string}>, res: Response, next: NextFunction) => {
-    const userId = 'cmb95bnyj00007kske17r1otp'
+    const userId = req.user; 
     const { eventId } = req.params;
     const redis = redisClient()
 
@@ -398,6 +409,17 @@ export const getEventOrders = async(req: Request<{eventId:string}>, res: Respons
 
     for(const order of eventOrders){
         const orderBookKey = `orderbook:${order.type === 'sell' ? 'buy' : 'sell'}:${order.side}:${eventId}`
+        if(order.cancel > 0 && order.type === 'buy'){
+         const cancelOrder = {
+             orderId: order.id,
+             investment: Number(order.price) * order.cancel,
+             buyPrice: Number(order.price),
+             cancel: true,
+             side: order.side
+         }
+
+         cancelled.push(cancelOrder)
+     }
         if(order.leftQty === 0 && order.quantity > 0 && order.type === 'buy'){
 
             const bestBid = Number(await redis.hget(orderBookKey, 'bestPrice')) || 0;
@@ -407,9 +429,11 @@ export const getEventOrders = async(req: Request<{eventId:string}>, res: Respons
                 investment: Number(order.price) * order.quantity,
                 currentValue: bestBid * ( bestBidQty >= order.quantity ? order.quantity : bestBidQty),
                 exit:true,
+                qty: order.quantity,
                 side:order.side 
             }
             matched.push(matchOrder)
+
         }
         else if(order.leftQty === 0 && order.quantity > 0 && order.type === 'sell'){
             const buyOrder = eventOrders.find(i => i.id === order.exitFromOrderId)
@@ -417,7 +441,8 @@ export const getEventOrders = async(req: Request<{eventId:string}>, res: Respons
                 orderId: order.id,
                 investment: (Number(buyOrder?.price) || 0) * order.quantity,
                 return: Number(order.price) * order.quantity - (Number(buyOrder?.price) || 0) * order.quantity,
-                exited:true,
+                exitQty:order.quantity,
+                exited:true, 
                 side:order.side 
             }
             exited.push(exitOrder)
@@ -432,6 +457,7 @@ export const getEventOrders = async(req: Request<{eventId:string}>, res: Respons
                    investment: Number(order.price) * (order.quantity - order.leftQty),
                    currentValue: bestBid * (bestBidQty >= order.quantity - order.leftQty ? order.quantity - order.leftQty : bestBidQty ),
                    exit:true,
+                   qty: order.quantity - order.leftQty,
                    side:order.side 
                }
 
@@ -457,26 +483,15 @@ export const getEventOrders = async(req: Request<{eventId:string}>, res: Respons
                pending.push(pendingOrder)                
             }
 
-            if(order.cancel > 0 && order.type === 'buy'){
-                const cancelOrder = {
-                    orderId: order.id,
-                    investment: Number(order.price) * order.cancel,
-                    buyPrice: Number(order.price),
-                    cancel: true,
-                    side: order.side
-                }
-
-                cancelled.push(cancelOrder)
-            }
         }
         else if(order.leftQty > 0 && order.type === 'sell'){
          const buyOrder = eventOrders.find(i => i.id === order.exitFromOrderId)
-         console.log(eventOrders, order.exitFromOrderId)
               if(order.quantity > order.leftQty){
                  const exitOrder = {
                 orderId: order.id,
                 investment: (Number(buyOrder?.price) || 0) * (order.quantity - order.leftQty),
                 return: Number(order.price) * (order.quantity - order.leftQty) - (Number(buyOrder?.price) || 0) * (order.quantity - order.leftQty),
+                exitQty: (order.quantity - order.leftQty),
                 exited:true,
                 side:order.side 
             }
@@ -498,6 +513,7 @@ export const getEventOrders = async(req: Request<{eventId:string}>, res: Respons
                     investment: Number(order.price) * order.leftQty,
                     exitValue : Number(order.price) * order.leftQty,
                     exiting: true,
+                    qty:order.quantity,
                     side: order.side
                }
 

@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { error } from 'console'
 import { create } from 'zustand'
 
 interface IPlaceOrder {
@@ -7,7 +6,8 @@ interface IPlaceOrder {
     price: number ,
     type: string,
     side : string,
-    qty: number
+    qty: number,
+    backendToken:string
 }
 
 const server_url = process.env.NEXT_PUBLIC_SERVER_ENDPOINT_STORE
@@ -20,7 +20,7 @@ interface ProboStore{
     orderSuccess:boolean,
     orderError: string | null
     getBalance: (id:string) => Promise<number | any>
-    placeOrder: ({eventId, price, type , side , qty}: IPlaceOrder) => Promise<string >
+    placeOrder: ({eventId, price, type , side , qty, backendToken}: IPlaceOrder) => Promise<string >
     setOrderFeedback:() => void;
 }
 const useProboStore = create<ProboStore>()((set) => {
@@ -43,10 +43,10 @@ const useProboStore = create<ProboStore>()((set) => {
                 set({error:e.message})
             }
         }, 
-        placeOrder: async({ eventId, price, type, side, qty }) => {
+        placeOrder: async({ eventId, price, type, side, qty,backendToken }) => {
             set({orderLoading: true})
             try{
-            const {data} = await axios.post(`${server_url}/initiate/order`, {
+            const {data} = await axios.post(`${server_url}/initiate/order`, { 
                 eventId,
                 price,
                 type,
@@ -55,7 +55,7 @@ const useProboStore = create<ProboStore>()((set) => {
             }, {
                 headers:{
                     'Content-Type': 'application/json',
-                    Authorization : ''
+                    Authorization : backendToken
                 }
             })
             set({orderSuccess:true})

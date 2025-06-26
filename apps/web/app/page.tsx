@@ -5,6 +5,7 @@ import { Logout } from "@components/Auth/LogoutButton";
 export default async function Home() {
   const session = await getServerSession(authOption)
 
+  console.log(session?.backendToken)
 
   return (
 

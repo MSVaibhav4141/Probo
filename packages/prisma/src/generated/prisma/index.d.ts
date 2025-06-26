@@ -4965,6 +4965,7 @@ export namespace Prisma {
     startTime: Date | null
     EndTime: Date | null
     status: string | null
+    outCome: string | null
   }
 
   export type EventsMaxAggregateOutputType = {
@@ -4973,6 +4974,7 @@ export namespace Prisma {
     startTime: Date | null
     EndTime: Date | null
     status: string | null
+    outCome: string | null
   }
 
   export type EventsCountAggregateOutputType = {
@@ -4981,6 +4983,7 @@ export namespace Prisma {
     startTime: number
     EndTime: number
     status: number
+    outCome: number
     _all: number
   }
 
@@ -4991,6 +4994,7 @@ export namespace Prisma {
     startTime?: true
     EndTime?: true
     status?: true
+    outCome?: true
   }
 
   export type EventsMaxAggregateInputType = {
@@ -4999,6 +5003,7 @@ export namespace Prisma {
     startTime?: true
     EndTime?: true
     status?: true
+    outCome?: true
   }
 
   export type EventsCountAggregateInputType = {
@@ -5007,6 +5012,7 @@ export namespace Prisma {
     startTime?: true
     EndTime?: true
     status?: true
+    outCome?: true
     _all?: true
   }
 
@@ -5088,6 +5094,7 @@ export namespace Prisma {
     startTime: Date
     EndTime: Date
     status: string
+    outCome: string
     _count: EventsCountAggregateOutputType | null
     _min: EventsMinAggregateOutputType | null
     _max: EventsMaxAggregateOutputType | null
@@ -5113,6 +5120,7 @@ export namespace Prisma {
     startTime?: boolean
     EndTime?: boolean
     status?: boolean
+    outCome?: boolean
     orders?: boolean | Events$ordersArgs<ExtArgs>
     _count?: boolean | EventsCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["events"]>
@@ -5123,6 +5131,7 @@ export namespace Prisma {
     startTime?: boolean
     EndTime?: boolean
     status?: boolean
+    outCome?: boolean
   }, ExtArgs["result"]["events"]>
 
   export type EventsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5131,6 +5140,7 @@ export namespace Prisma {
     startTime?: boolean
     EndTime?: boolean
     status?: boolean
+    outCome?: boolean
   }, ExtArgs["result"]["events"]>
 
   export type EventsSelectScalar = {
@@ -5139,9 +5149,10 @@ export namespace Prisma {
     startTime?: boolean
     EndTime?: boolean
     status?: boolean
+    outCome?: boolean
   }
 
-  export type EventsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "startTime" | "EndTime" | "status", ExtArgs["result"]["events"]>
+  export type EventsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "startTime" | "EndTime" | "status" | "outCome", ExtArgs["result"]["events"]>
   export type EventsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orders?: boolean | Events$ordersArgs<ExtArgs>
     _count?: boolean | EventsCountOutputTypeDefaultArgs<ExtArgs>
@@ -5160,6 +5171,7 @@ export namespace Prisma {
       startTime: Date
       EndTime: Date
       status: string
+      outCome: string
     }, ExtArgs["result"]["events"]>
     composites: {}
   }
@@ -5589,6 +5601,7 @@ export namespace Prisma {
     readonly startTime: FieldRef<"Events", 'DateTime'>
     readonly EndTime: FieldRef<"Events", 'DateTime'>
     readonly status: FieldRef<"Events", 'String'>
+    readonly outCome: FieldRef<"Events", 'String'>
   }
     
 
@@ -7204,7 +7217,8 @@ export namespace Prisma {
     title: 'title',
     startTime: 'startTime',
     EndTime: 'EndTime',
-    status: 'status'
+    status: 'status',
+    outCome: 'outCome'
   };
 
   export type EventsScalarFieldEnum = (typeof EventsScalarFieldEnum)[keyof typeof EventsScalarFieldEnum]
@@ -7597,6 +7611,7 @@ export namespace Prisma {
     startTime?: DateTimeFilter<"Events"> | Date | string
     EndTime?: DateTimeFilter<"Events"> | Date | string
     status?: StringFilter<"Events"> | string
+    outCome?: StringFilter<"Events"> | string
     orders?: OrdersListRelationFilter
   }
 
@@ -7606,6 +7621,7 @@ export namespace Prisma {
     startTime?: SortOrder
     EndTime?: SortOrder
     status?: SortOrder
+    outCome?: SortOrder
     orders?: OrdersOrderByRelationAggregateInput
   }
 
@@ -7618,6 +7634,7 @@ export namespace Prisma {
     startTime?: DateTimeFilter<"Events"> | Date | string
     EndTime?: DateTimeFilter<"Events"> | Date | string
     status?: StringFilter<"Events"> | string
+    outCome?: StringFilter<"Events"> | string
     orders?: OrdersListRelationFilter
   }, "id">
 
@@ -7627,6 +7644,7 @@ export namespace Prisma {
     startTime?: SortOrder
     EndTime?: SortOrder
     status?: SortOrder
+    outCome?: SortOrder
     _count?: EventsCountOrderByAggregateInput
     _max?: EventsMaxOrderByAggregateInput
     _min?: EventsMinOrderByAggregateInput
@@ -7641,6 +7659,7 @@ export namespace Prisma {
     startTime?: DateTimeWithAggregatesFilter<"Events"> | Date | string
     EndTime?: DateTimeWithAggregatesFilter<"Events"> | Date | string
     status?: StringWithAggregatesFilter<"Events"> | string
+    outCome?: StringWithAggregatesFilter<"Events"> | string
   }
 
   export type TradesWhereInput = {
@@ -8007,6 +8026,7 @@ export namespace Prisma {
     startTime: Date | string
     EndTime: Date | string
     status: string
+    outCome?: string
     orders?: OrdersCreateNestedManyWithoutEventInput
   }
 
@@ -8016,6 +8036,7 @@ export namespace Prisma {
     startTime: Date | string
     EndTime: Date | string
     status: string
+    outCome?: string
     orders?: OrdersUncheckedCreateNestedManyWithoutEventInput
   }
 
@@ -8025,6 +8046,7 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     EndTime?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
+    outCome?: StringFieldUpdateOperationsInput | string
     orders?: OrdersUpdateManyWithoutEventNestedInput
   }
 
@@ -8034,6 +8056,7 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     EndTime?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
+    outCome?: StringFieldUpdateOperationsInput | string
     orders?: OrdersUncheckedUpdateManyWithoutEventNestedInput
   }
 
@@ -8043,6 +8066,7 @@ export namespace Prisma {
     startTime: Date | string
     EndTime: Date | string
     status: string
+    outCome?: string
   }
 
   export type EventsUpdateManyMutationInput = {
@@ -8051,6 +8075,7 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     EndTime?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
+    outCome?: StringFieldUpdateOperationsInput | string
   }
 
   export type EventsUncheckedUpdateManyInput = {
@@ -8059,6 +8084,7 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     EndTime?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
+    outCome?: StringFieldUpdateOperationsInput | string
   }
 
   export type TradesCreateInput = {
@@ -8527,6 +8553,7 @@ export namespace Prisma {
     startTime?: SortOrder
     EndTime?: SortOrder
     status?: SortOrder
+    outCome?: SortOrder
   }
 
   export type EventsMaxOrderByAggregateInput = {
@@ -8535,6 +8562,7 @@ export namespace Prisma {
     startTime?: SortOrder
     EndTime?: SortOrder
     status?: SortOrder
+    outCome?: SortOrder
   }
 
   export type EventsMinOrderByAggregateInput = {
@@ -8543,6 +8571,7 @@ export namespace Prisma {
     startTime?: SortOrder
     EndTime?: SortOrder
     status?: SortOrder
+    outCome?: SortOrder
   }
 
   export type OrdersScalarRelationFilter = {
@@ -9412,6 +9441,7 @@ export namespace Prisma {
     startTime: Date | string
     EndTime: Date | string
     status: string
+    outCome?: string
   }
 
   export type EventsUncheckedCreateWithoutOrdersInput = {
@@ -9420,6 +9450,7 @@ export namespace Prisma {
     startTime: Date | string
     EndTime: Date | string
     status: string
+    outCome?: string
   }
 
   export type EventsCreateOrConnectWithoutOrdersInput = {
@@ -9519,6 +9550,7 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     EndTime?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
+    outCome?: StringFieldUpdateOperationsInput | string
   }
 
   export type EventsUncheckedUpdateWithoutOrdersInput = {
@@ -9527,6 +9559,7 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     EndTime?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
+    outCome?: StringFieldUpdateOperationsInput | string
   }
 
   export type OrdersCreateWithoutEventInput = {

@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 
 
-export function MatchPredictionCard() {
+export function MatchPredictionCard({name}:{name:string}) {
   return (
     <div className="flex items-center gap-4 py-4 bg-gray-100 rounded-md">
       <div className="w-28 h-28 rounded-full overflow-hidden bg-white flex items-center justify-center">
@@ -17,7 +17,7 @@ export function MatchPredictionCard() {
 
       <div className="flex flex-col">
         <h2 className="text-sm sm:text-xl font-semibold text-black text-start">
-          Aleksandar Kovacevic to win the match against Emil Ruusuvuori?
+          {name}
         </h2>
         <p className="text-xs sm:text-sm font-medium text-gray-500 mt-1 text-start">
           PROBABILITY OF YES <span className="text-blue-600 font-medium">50.00%</span>

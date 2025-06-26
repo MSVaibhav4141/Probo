@@ -165,7 +165,8 @@ exports.Prisma.EventsScalarFieldEnum = {
   title: 'title',
   startTime: 'startTime',
   EndTime: 'EndTime',
-  status: 'status'
+  status: 'status',
+  outCome: 'outCome'
 };
 
 exports.Prisma.TradesScalarFieldEnum = {

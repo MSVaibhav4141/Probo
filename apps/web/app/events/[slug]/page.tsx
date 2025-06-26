@@ -5,6 +5,8 @@ import { getServerSession } from 'next-auth'
 import { authOption } from '../../../lib/auth'
 import OrderBook from '@components/events/Orderbook/OrderBook'
 import EventChart from '@components/events/EventChart/EventChart'
+import Stats from '@components/events/StatsContainer'
+import EventDetails from '@components/events/EventDetails'
 
 
 type Params = Promise<{ slug: string }>
@@ -34,16 +36,14 @@ console.log(process.env.NEXT_PUBLIC_SERVER_ENDPOINT, process.env.NEXT_PUBLIC_WS)
         </div>
 {/* <   StatsContainer team1="Mumbai" team2="Delhi" /> */}
 
-        <div id="overview" className="scroll-mt-20 mt-10 p-4 bg-white rounded-md shadow">
-          <h2 className="text-lg font-semibold mb-2">Overview</h2>
-          <p className="text-sm text-gray-600">This event represents the live prediction market for the match outcome between Mumbai and Delhi. The orderbook and timeline provide real-time data on user predictions.</p>
-        </div>
+          <Stats />
+          <EventDetails />
       </div>
 
       {/* Right side sticky BuyBox */}
       <div className="w-[40vw] pl-4 pr-4">
         <div className="sticky top-4">
-          <BuyBox eventId={eventId} userId={session?.user.id} />
+          <BuyBox eventId={eventId} prob={chart.probabilityStatus.at(-1)} userId={session?.user.id} />
         </div>
       </div>
     </div>

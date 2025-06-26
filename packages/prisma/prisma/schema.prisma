@@ -73,6 +73,7 @@ model Events{
   startTime DateTime
   EndTime DateTime
   status String
+  outCome String @default("NA")
   orders Orders[]
 }
 
