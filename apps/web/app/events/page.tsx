@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import EventCard from "@components/events/EventCard";
 import Tabs from "@components/events/EventTab";
 import { getServerSession } from "next-auth";
