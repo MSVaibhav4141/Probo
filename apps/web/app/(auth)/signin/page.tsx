@@ -7,7 +7,7 @@ export default async function SignInPage() {
   const session = await getServerSession(authOption);
 
   if (session) {
-    redirect('/');
+    redirect('/events/9a19229b-3bb3-40ab-a38d-742bec0d9bf5');
     return null;
   }
 
