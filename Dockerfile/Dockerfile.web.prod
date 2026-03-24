@@ -16,15 +16,15 @@ COPY ./turbo.json /usr/src/app/turbo.json
 COPY ./pnpm-lock.yaml /usr/src/app/pnpm-lock.yaml
 COPY ./pnpm-workspace.yaml /usr/src/app/pnpm-workspace.yaml
 # Install dependencies
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
 COPY ./apps/web /usr/src/app/apps/web
 
 WORKDIR /usr/src/app/apps/web
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
 WORKDIR /usr/src/app/packages/prisma
-
+RUN npx prisma@6.9.0 generate 
 
 WORKDIR /usr/src/app/packages/ui
 RUN pnpm run build
