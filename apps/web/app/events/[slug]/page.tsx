@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { BuyBox } from '@components/BuyBox/BuyBox'
 import Events from '@components/events/Events'
 import Tabs from '@components/events/Tabs/Tabs'
