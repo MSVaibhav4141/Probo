@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { EventInvestments } from "@components/Potfolio/EventInvestments";
 import { MatchPredictionCard } from "@components/Potfolio/PortfoliHeader";
 import { Orders } from "@components/Potfolio/Orders";
