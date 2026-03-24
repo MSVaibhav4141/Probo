@@ -24,7 +24,7 @@ WORKDIR /usr/src/app/apps/web
 RUN pnpm install
 
 WORKDIR /usr/src/app/packages/prisma
-RUN DATABASE_URL=$DATABASE_URL npx prisma generate
+
 
 WORKDIR /usr/src/app/packages/ui
 RUN pnpm run build
